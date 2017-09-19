@@ -1,8 +1,7 @@
 /**
- *
- * Created by shouhewu on 6/8/17.
- *
+ * update by zhaoliang 2017-9-19
  */
+
 var express = require("express");
 var path = require('path');
 var app = express();
@@ -30,6 +29,7 @@ var sql=require('./db/mysqlservice.js')
 var config = require('./config.json');
 var host = process.env.HOST || config.host;
 var port = process.env.PORT || config.port;
+
 // =======================   controller  ===================
 
 app.post("/api/tx/getinfo", function(req, res) {
@@ -92,7 +92,6 @@ app.post("/api/block/json", function(req, res) {
     })
 });
 
-
 app.post("/api/block/getinfo", function(req, res) {
 
     let number=req.body.number
@@ -106,15 +105,6 @@ app.post("/api/block/getinfo", function(req, res) {
     })
 });
 
-/*app.post("/api/block/get", function(req, res) {
-    let number=req.body.number
-    query.getBlockByNumber('peer1',ledgerMgr.getCurrChannel(),parseInt(number),'admin','org1').then(block=>{
-        res.send({
-            'number':number,
-            'txCount':block.data.data.length
-        })
-    })
-});*/
 app.post("/api/block/get", function(req, res) {
     let number=req.body.number
     sql.getRowByPkOne(`select blocknum ,txcount from blocks where channelname='${ledgerMgr.getCurrChannel()}' and blocknum='${number}'`).then(row=>{
@@ -128,7 +118,7 @@ app.post("/api/block/get", function(req, res) {
 
 });
 
-//return latest status
+
 app.post("/api/status/get", function(req, res) {
     statusMertics.getStatus(ledgerMgr.getCurrChannel(),function(status){
         res.send(status)

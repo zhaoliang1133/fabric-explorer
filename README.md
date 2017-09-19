@@ -1,238 +1,89 @@
-# fabric explorer
+# FabricExplorer浏览区块的操作
 
-Fabric-explorer is a simple, powerful, easy-to-use, highly maintainable, open source fabric browser. Fabric-explorer can reduce the difficulty of learning and using fabric, so that we can intuitively feel the fabric of the powerful features.
+[TOC]
 
-[技术支持](http://www.blockchainbrother.com/articles/fabric-explorer)
-
-## Directory Structure
+###  1. git 项目到服务器
 ```
-├── app                    fabric GRPC interface
-├── artifacts              
-├── blockdata              the fabric data struct sample
-├── db			   the mysql script and help class
-├── explorer_client        Web Ui
-├── listener               websocket listener
-├── metrics                metrics about tx count per minute and block count per minute
-├── service                the service 
-├── socket		   push real time data to front end
-├── timer                    
-└── utils                    
+git clone https://github.com/zhaoliang1133/fabric-explorer.git
 ```
-
-
-## Demo
-[See live demo here](http://112.124.115.82:8800/)
-
-
-## Requirements
-
-* docker 1.12.6
-* docker-compose 1.11.2
-* golang 1.8
-* nodejs 6.9.5
-* git
-* mysql
-
-## run database script : db/fabricexplorer.sql
-
-```sql
-
-
-/*
- fabric-explorer mysql database
- http://www.blockchainbtother.com
-*/
-
-DROP DATABASE IF EXISTS `fabricexplorer`;
-
-CREATE DATABASE fabricexplorer DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci; 
-
-use  fabricexplorer;
-
-
-SET NAMES utf8;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
---  Table structure for `blocks`
--- ----------------------------
-DROP TABLE IF EXISTS `blocks`;
-CREATE TABLE `blocks` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `blocknum` int(11) DEFAULT NULL,
-  `datahash` varchar(256) DEFAULT NULL,
-  `prehash` varchar(256) DEFAULT NULL,
-  `channelname` varchar(128) DEFAULT NULL,
-  `txcount` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `block_ind` (`channelname`)
-) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='blocks';
-
--- ----------------------------
---  Table structure for `chaincodes`
--- ----------------------------
-DROP TABLE IF EXISTS `chaincodes`;
-CREATE TABLE `chaincodes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `version` varchar(255) DEFAULT NULL,
-  `path` varchar(255) DEFAULT NULL,
-  `channelname` varchar(255) DEFAULT NULL,
-  `txcount` int(11) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='Chain codes ';
-
--- ----------------------------
---  Table structure for `channel`
--- ----------------------------
-DROP TABLE IF EXISTS `channel`;
-CREATE TABLE `channel` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `name` varchar(64) DEFAULT NULL,
-  `blocks` int(11) DEFAULT NULL,
-  `trans` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='Channel';
-
--- ----------------------------
---  Table structure for `peer`
--- ----------------------------
-DROP TABLE IF EXISTS `peer`;
-CREATE TABLE `peer` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `org` int(11) DEFAULT NULL,
-  `name` varchar(64) DEFAULT NULL,
-  `mspid` varchar(64) DEFAULT NULL,
-  `requests` varchar(64) DEFAULT NULL,
-  `events` varchar(64) DEFAULT NULL,
-  `server_hostname` varchar(64) DEFAULT NULL,
-  `createdt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT=' ';
-
--- ----------------------------
---  Table structure for `peer_ref_channel`
--- ----------------------------
-DROP TABLE IF EXISTS `peer_ref_channel`;
-CREATE TABLE `peer_ref_channel` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `peerid` int(11) DEFAULT NULL,
-  `channelid` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT=' ';
-
--- ----------------------------
---  Table structure for `transaction`
--- ----------------------------
-DROP TABLE IF EXISTS `transaction`;
-CREATE TABLE `transaction` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `channelname` varchar(64) DEFAULT NULL,
-  `blockid` int(11) DEFAULT NULL,
-  `txhash` varchar(256) DEFAULT NULL,
-  `createdt` datetime DEFAULT NULL,
-  `chaincodename` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2823 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT=' ';
-
--- ----------------------------
---  Table structure for `write_lock`
--- ----------------------------
-DROP TABLE IF EXISTS `write_lock`;
-CREATE TABLE `write_lock` (
-  `write_lock` int(1) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`write_lock`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-SET FOREIGN_KEY_CHECKS = 1;
+### 2. 删除原始证书
 ```
-
-## set fabric docker env
-
-1. `git clone https://github.com/onechain/fabric-docker-compose-svt.git`
-2. `mv fabric-docker-compose-svt $GOPATH/src/github.com/hyperledger/fabric/examples/`
-3. `cd $GOPATH/src/github.com/hyperledger/fabric/examples/fabric-docker-compose-svt`
-4. `./download_images.sh`
-5. `./start.sh`
-
-
-## start fabric-explorer
-
-1. `git clone https://github.com/onechain/fabric-explorer.git`
-2. `rm -rf ./artifacts/crypto-config/`
-3. `cp -r $GOPATH/src/github.com/hyperledger/fabric/examples/fabric-docker-compose-svt/crypto-config ./fabric-explorer/artifacts/crypto-config/`
-
-4. modify config.json,set channel,mysql,tls（if you not user tls , please set property enableTls to value true ,if not set false ）
-
-```json
- "channelsList": ["mychannel"],
- "enableTls":true, 
- "mysql":{
-      "host":"172.16.10.162",
+cd  fabric-explorer
+rm -rf ./artifacts/crypto-config/
+```
+### 3. 把医疗项目证书复制过来
+- 进入到医疗项目证书目录
+```
+/root/fabric-tools/fabric-scripts/hlfv1/composer
+```
+- 复制证书到浏览区块项目
+```
+cp -r crypto-config /root/fabric-explorer/artifacts
+```
+### 4. 修改config.json文件为
+```
+{
+  "host":"localhost",
+  "port":"8080",
+  "channelsList": ["composerchannel"],
+  "GOPATH":"../artifacts",
+  "keyValueStore":"/tmp/fabric-client-kvs",
+  "eventWaitTime":"30000",
+  "enableTls":false,
+  "users":[
+      {
+        "username":"admin",
+        "secret":"adminpw"
+      }
+  ],
+  "mysql":{
+      "host":"localhost",
       "database":"fabricexplorer",
+      "port":"3306",
       "username":"root",
       "passwd":"123456"
-   }
+  }
+}
+
 ```
-
-5. modify app/network-config.json （if you use tls please modify app/network-config-tls.json）
-
-```json
- {
-	"network-config": {
-		"orderer": [{
-			"url": "grpc://112.124.115.82:7050",
-			"server-hostname": "orderer0.example.com"
-		},{
-			"url": "grpc://112.124.115.82:8050",
-			"server-hostname": "orderer1.example.com"
-		},{
-			"url": "grpc://112.124.115.82:9050",
-			"server-hostname": "orderer2.example.com"
-		}],
-		"org1": {
-			"name": "peerOrg1",
-			"mspid": "Org1MSP",
-			"ca": "http://112.124.115.82:7054",
-			"peer1": {
-				"requests": "grpc://112.124.115.82:7051",
-				"events": "grpc://112.124.115.82:7053",
-				"server-hostname": "peer0.org1.example.com"
-			},
-			"peer2": {
-				"requests": "grpc://112.124.115.82:8051",
-				"events": "grpc://112.124.115.82:8053",
-				"server-hostname": "peer1.org1.example.com"
-			},
-			"admin": {
-				"key": "/artifacts/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
-				"cert": "/artifacts/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
-			}
-		},
-		"org2": {
-			"name": "peerOrg2",
-			"mspid": "Org2MSP",
-			"ca": "http://112.124.115.82:8054",
-			"peer1": {
-				"requests": "grpc://112.124.115.82:9051",
-				"events": "grpc://112.124.115.82:9053",
-				"server-hostname": "peer0.org2.example.com"
-			},
-			"peer2": {
-				"requests": "grpc://112.124.115.82:10051",
-				"events": "grpc://112.124.115.82:10053",
-				"server-hostname": "peer1.org2.example.com"
-			},
-			"admin": {
-				"key": "/artifacts/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore",
-				"cert": "/artifacts/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts"
-			}
-		}
-	}
+### 5. 修改app/network-config.json文件为
+```
+{
+    "network-config": {
+        "orderer": [{
+            "url": "grpc://127.0.0.1:7050",
+            "server-hostname": "orderer.example.com"
+        }],
+        "org1": {
+            "name": "peerOrg1",
+            "mspid": "Org1MSP",
+            "ca": "http://127.0.0.1:7054",
+            "peer1": {
+                "requests": "grpc://127.0.0.1:7051",
+                "events": "grpc://127.0.0.1:7053",
+                "server-hostname": "peer0.org1.example.com"
+            },
+            "admin": {
+                "key": "/artifacts/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore",
+                "cert": "/artifacts/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts"
+            }
+        }
+    }
 }
 ```
-
-6. `npm install`
-7. `./start.sh`
-
-
+### 6. 安装依赖
+```
+npm install
+```
+### 7. 启动项目
+```
+./start.sh
+```
+### 8. 查看日志
+```
+cat log.log
+```
+### 9. 访问地址
+```
+http://localhost:8080/#
+```
