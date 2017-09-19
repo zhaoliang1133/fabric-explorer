@@ -1,7 +1,5 @@
 # FabricExplorer浏览区块的操作
 
-[TOC]
-
 ###  1. git 项目到服务器
 ```
 git clone https://github.com/zhaoliang1133/fabric-explorer.git
@@ -11,8 +9,8 @@ git clone https://github.com/zhaoliang1133/fabric-explorer.git
 cd  fabric-explorer
 rm -rf ./artifacts/crypto-config/
 ```
-### 3. 把医疗项目证书复制过来
-- 进入到医疗项目证书目录
+### 3. 把项目证书复制过来
+- 进入到项目证书目录
 ```
 /root/fabric-tools/fabric-scripts/hlfv1/composer
 ```
